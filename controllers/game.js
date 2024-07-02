@@ -4,7 +4,7 @@ exports.createGame = (req, res, next) => {
     const game = new Game({
         gameName: req.body.gameName,
         overview: req.body.overview,
-        posterPath: req.body.posterPath
+        posterPath: '/' + req.files.posterPath[0].filename
     });
     game.save().then(
         () => {
