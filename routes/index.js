@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const GameRoutes = require('./game');
+const UserRoutes = require('./user');
 
-// Middleware pour définir les en-têtes de réponse permettant le contrôle d'accès (CORS)
+
 router.use((req, res, next) => {
     res.header(
         "Access-Control-Allow-Headers",
@@ -12,6 +13,6 @@ router.use((req, res, next) => {
 });
 
 // Définition des routes principales de l'API. Toutes les routes commencent par /api
-router.use('/api', GameRoutes);
+router.use('/api', UserRoutes, GameRoutes);
 
 module.exports = router;

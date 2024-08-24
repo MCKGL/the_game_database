@@ -6,7 +6,6 @@ const userSchema = mongoose.Schema({
     password: { type: String, required: true },
     pseudo: { type: String, required: true, unique: true},
     isAdmin: { type: Boolean, required: true, default: false},
-    lists : [{ type: mongoose.Schema.Types.ObjectId, ref: 'List' }]
 });
 
 userSchema.plugin(uniqueValidator);

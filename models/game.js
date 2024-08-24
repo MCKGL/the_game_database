@@ -5,7 +5,6 @@ const gameSchema = mongoose.Schema({
     overview: { type: String, required: true },
     posterPath: { type: String, required: true },
     // pegi: { type: mongoose.Schema.Types.ObjectId, ref: 'Pegi', required: true },
-    // lists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'List' }],
     // developers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Developer', required: true }],
     // types: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Type', required: true }],
     // editors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Editor', required: true }],
