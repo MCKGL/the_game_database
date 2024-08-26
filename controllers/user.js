@@ -74,6 +74,7 @@ exports.login = async (req, res) => {
         });
 
         res.status(200).send({
+            id: user._id,
             isAdmin: user.isAdmin,
             pseudo: user.pseudo,
             csrfToken: csrfToken,
@@ -84,4 +85,67 @@ exports.login = async (req, res) => {
             success: false,
         });
     }
-}
+};
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await models.User.find().select("-__v -password");
+        res.status(200).send(users);
+    } catch (error) {
+        res.status(500).send({
+            message: error.message,
+        });
+    }
+};
+
+exports.getUser = async (req, res) => {
+    try {
+        const user = await models.User.findById(req.params.id).select("-__v -password");
+        if (!user) {
+            return res.status(404).send({
+                message: "User Not Found!",
+            });
+        }
+        res.status(200).send(user);
+    } catch (error) {
+        res.status(500).send({
+            message: error.message,
+        });
+    }
+};
+
+exports.updateUser = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const updates = req.body;
+        const allowedUpdates = ["pseudo", "email", "password", "isAdmin"];
+        const isValidUpdate = Object.keys(updates).every(update => allowedUpdates.includes(update));
+        const currentUser = await models.User.findById(req.userId);
+
+        if (!isValidUpdate) {
+            return res.status(400).send({ message: "Invalid updates!" });
+        }
+
+        if (updates.hasOwnProperty('isAdmin') && !currentUser.isAdmin) {
+            return res.status(403).send({ message: 'Only administrators can modify the isAdmin field.' });
+        }
+
+        if (updates.password) {
+            updates.password = await bcrypt.hash(updates.password, 10);
+        }
+
+        const updatedUser = await models.User.findByIdAndUpdate(
+            userId,
+            { $set: updates },
+            { new: true, runValidators: true }
+        ).select("-__v -password");
+
+        if (!updatedUser) {
+            return res.status(404).send({ message: "User Not Found!" });
+        }
+
+        res.status(200).send(updatedUser);
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+};

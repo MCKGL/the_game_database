@@ -5,6 +5,7 @@ const app = express();
 const path = require('path');
 const routes = require('./routes');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 
 require('./database/connexion');
 
@@ -12,13 +13,15 @@ const corsOptions = {
     origin: "*",
 };
 
+// app settings and middlewares are defined here
 app
-    // Utilisation des middlewares, la fonction use() permet d'ajouter des middlewares
     // .use(limiter)
     .use(helmet())
     .use(cors(corsOptions))
     .use(express.json())
     .use(express.static(path.join(__dirname, "public")))
+    // cookieParser is used to parse cookies from the HTTP request headers
+    .use(cookieParser())
     .use('/', routes);
 
 app.get("/", (req, res) => {

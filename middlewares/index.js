@@ -2,10 +2,10 @@
 // const verifyRegister = require("./verifyRegister");
 const upload = require("./multer");
 const verifyRegister = require("./verifyRegister");
-const authjwt = require("./authjwt");
+const auth = require("./auth");
 
 module.exports = {
-    authjwt,
+    auth,
     verifyRegister,
     upload
 };
