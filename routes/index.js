@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const GameRoutes = require('./game');
 const UserRoutes = require('./user');
+const DeveloperRoutes = require('./developer');
 
 
 router.use((req, res, next) => {
@@ -13,6 +14,6 @@ router.use((req, res, next) => {
 });
 
 // Définition des routes principales de l'API. Toutes les routes commencent par /api
-router.use('/api', UserRoutes, GameRoutes);
+router.use('/api', UserRoutes, GameRoutes, DeveloperRoutes);
 
 module.exports = router;
