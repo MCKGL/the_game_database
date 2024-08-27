@@ -1,11 +1,5 @@
 const Game = require('../models/game');
 
-// TODO : Create every dependences
-// TODO : complete the createGame function
-// TODO : create list
-// TODO : add to list and remove from list
-// TODO : add some security cors, express-rate-limit,...
-
 exports.createGame = (req, res, next) => {
     const game = new Game({
         gameName: req.body.gameName,
