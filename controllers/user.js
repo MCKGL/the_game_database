@@ -19,6 +19,7 @@ exports.register = async (req, res) => {
             email: req.body.email ,
             // password is hashed before being stored in the database
             password: bcrypt.hashSync(req.body.password),
+            // admin is set to false by default
             // isAdmin: req.body.isAdmin,
             pseudo: req.body.pseudo,
         });

@@ -2,7 +2,6 @@
 
 The Game Database is an API currently under development. It is built with Node.js and utilizes MongoDB for data storage.
 
-// TODO : CRUD Pegi
 // TODO : complete the CRUD Game
 // TODO : CRUD ReleaseDate
 // TODO : CRUD list

@@ -1,4 +1,4 @@
-const createOne = (Model, allowedFields) => async (req, res) => {
+const createOne = (Model, allowedFields, uniqueField) => async (req, res) => {
     try {
         const creation = req.body;
         const isValidCreate = Object.keys(creation).every(key => allowedFields.includes(key));
@@ -7,7 +7,7 @@ const createOne = (Model, allowedFields) => async (req, res) => {
             return res.status(400).send({ message: 'Invalid fields in request body' });
         }
 
-        const existingItem = await Model.findOne({ name: creation.name });
+        const existingItem = await Model.findOne({ [uniqueField]: creation[uniqueField] });
 
         if (existingItem) {
             return res.status(400).send({ message: `${Model.modelName} name already exists` });
@@ -42,9 +42,9 @@ const getById = (Model) => async (req, res) => {
     }
 };
 
-const getByName = (Model) => async (req, res) => {
+const getByName = (Model, uniqueField) => async (req, res) => {
     try {
-        const item = await Model.findOne({ name: req.params.name }).select("-__v");
+        const item = await Model.findOne({ [uniqueField]: req.params[uniqueField] }).select("-__v");
         if (item) {
             res.status(200).send(item);
         } else {
