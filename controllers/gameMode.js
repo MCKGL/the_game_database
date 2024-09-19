@@ -1,4 +1,4 @@
-const genericController = require('./genericControllerGameAttributes');
+const genericController = require('./genericController');
 const GameMode = require("../models").GameMode;
 
 exports.create = genericController.createOne(GameMode, ['gameMode'], ['gameMode']);

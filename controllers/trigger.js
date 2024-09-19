@@ -1,4 +1,4 @@
-const genericController = require('./genericControllerGameAttributes');
+const genericController = require('./genericController');
 const Trigger = require("../models").Trigger;
 
 exports.create = genericController.createOne(Trigger, ['triggerLabel'], ['triggerLabel']);

@@ -1,32 +1,56 @@
-const genericController = require('./genericControllerGameAttributes');
+const genericController = require('./genericController');
 const Pegi = require("../models").Pegi;
 const fs = require('fs').promises;
 const path = require('path');
 
-const createPegi = (req, res) => {
-    const pegi = new Pegi({
-        pegiLabel: req.body.pegiLabel,
-        imgUrl: '/' + req.file.filename
-    });
-    pegi.save().then(
-        () => {
-            res.status(201).json({
-                message: 'Pegi saved successfully!'
-            });
+const createPegi = async (req, res) => {
+    let uploadedImagePath;
+    try {
+        const create = req.body;
+        const allowedFields = ['pegiLabel', 'imgUrl'];
+        const isValidCreate = Object.keys(create).every(key => allowedFields.includes(key));
+
+        // If the request does not contain valid fields, delete the uploaded image and return an error
+        if (!isValidCreate) {
+            if (req.file && req.file.filename) {
+                uploadedImagePath = path.join('./public/images', req.file.filename);
+                await fs.unlink(uploadedImagePath);
+                console.log('Uploaded image deleted due to invalid fields');
+            }
+            return res.status(400).send({ message: 'Invalid update fields' });
         }
-    ).catch(
-        (error) => {
-            if (error.name === 'ValidationError') {
-                res.status(400).json({
-                    error: error
-                });
-            } else {
-                res.status(500).json({
-                    error: error
+        const pegi = new Pegi({
+            pegiLabel: req.body.pegiLabel,
+            imgUrl: '/' + req.file.filename
+        });
+        pegi.save().then(
+            () => {
+                res.status(201).json({
+                    message: 'Pegi saved successfully!'
                 });
             }
+        ).catch(
+            (error) => {
+                if (error.name === 'ValidationError') {
+                    res.status(400).json({
+                        error: error
+                    });
+                } else {
+                    res.status(500).json({
+                        error: error
+                    });
+                }
+            }
+        );
+    } catch (error) {
+        // If an error occurs, delete the uploaded image and return an error message
+        if (req.file && req.file.filename) {
+            uploadedImagePath = path.join('./public/images', req.file.filename);
+            await fs.unlink(uploadedImagePath);
+            console.log('Uploaded image deleted due to server error');
         }
-    );
+        res.status(500).send({ message: `Server error: ${error.message}` });
+    }
 }
 
 const updatePegi = async (req, res) => {

@@ -7,6 +7,7 @@ const createOne = (Model, allowedFields, uniqueFields) => async (req, res) => {
             return res.status(400).send({ message: 'Invalid fields in request body' });
         }
 
+        // Check if the unique fields are unique. Unique fields can be a combination of fields
         const uniqueQuery = {};
         uniqueFields.forEach(field => {
             uniqueQuery[field] = creation[field];

@@ -1,5 +1,5 @@
 const Game = require('../models').Game;
-const genericController = require("./genericControllerGameAttributes");
+const genericController = require("./genericController");
 const fs = require('fs').promises;
 const path = require('path');
 const ReleaseDate = require('../models').ReleaseDate;
@@ -11,7 +11,22 @@ const Trigger = require('../models').Trigger;
 const Pegi = require('../models').Pegi;
 
 const createGame = async (req, res) => {
+    let uploadedImagePath;
     try {
+        const create = req.body;
+        const allowedFields = ['gameName', 'overview', 'posterPath', 'pegi', 'developers', 'types', 'editors', 'triggers', 'gameModes'];
+        const isValidCreate = Object.keys(create).every(key => allowedFields.includes(key));
+
+        // If the request does not contain valid fields, delete the uploaded image and return an error
+        if (!isValidCreate) {
+            if (req.file && req.file.filename) {
+                uploadedImagePath = path.join('./public/images', req.file.filename);
+                await fs.unlink(uploadedImagePath);
+                console.log('Uploaded image deleted due to invalid fields');
+            }
+            return res.status(400).send({ message: 'Invalid update fields' });
+        }
+
         // check if all required fields are provided
         const editorIds = req.body.editors;
         const developerIds = req.body.developers;
@@ -57,7 +72,13 @@ const createGame = async (req, res) => {
             game: savedGame,
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // If an error occurs, delete the uploaded image and return an error message
+        if (req.file && req.file.filename) {
+            uploadedImagePath = path.join('./public/images', req.file.filename);
+            await fs.unlink(uploadedImagePath);
+            console.log('Uploaded image deleted due to server error');
+        }
+        res.status(500).send({ message: `Server error: ${error.message}` });
     }
 };
 
@@ -148,6 +169,12 @@ const updateGame = async (req, res) => {
 
         res.status(200).send(updatedGame);
     } catch (error) {
+        // If an error occurs, delete the uploaded image and return an error message
+        if (req.file && req.file.filename) {
+            uploadedImagePath = path.join('./public/images', req.file.filename);
+            await fs.unlink(uploadedImagePath);
+            console.log('Uploaded image deleted due to server error');
+        }
         res.status(500).send({ message: `Server error: ${error.message}` });
     }
 };

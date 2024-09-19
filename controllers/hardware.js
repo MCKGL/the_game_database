@@ -1,4 +1,4 @@
-const genericController = require('./genericControllerGameAttributes');
+const genericController = require('./genericController');
 const Hardware = require("../models").Hardware;
 
 exports.create = genericController.createOne(Hardware, ['hardwareName'], ['hardwareName']);
