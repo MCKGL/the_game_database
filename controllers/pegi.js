@@ -46,8 +46,8 @@ const updatePegi = async (req, res) => {
             return res.status(400).send({ message: 'Invalid update fields' });
         }
 
-        const item = await Pegi.findById(req.params.id);
-        if (!item) {
+        const pegi = await Pegi.findById(req.params.id);
+        if (!pegi) {
             if (req.file && req.file.filename) {
                 uploadedImagePath = path.join('./public/images', req.file.filename);
                 await fs.unlink(uploadedImagePath);
@@ -62,7 +62,7 @@ const updatePegi = async (req, res) => {
             updates.imgUrl = '/' + req.file.filename;
 
             // delete the old image
-            const oldImagePath = path.join('./public/images', item.imgUrl);
+            const oldImagePath = path.join('./public/images', pegi.imgUrl);
             try {
                 await fs.unlink(oldImagePath);
                 console.log('Old image deleted successfully');

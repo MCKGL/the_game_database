@@ -1,4 +1,4 @@
-const createOne = (Model, allowedFields, uniqueField) => async (req, res) => {
+const createOne = (Model, allowedFields, uniqueFields) => async (req, res) => {
     try {
         const creation = req.body;
         const isValidCreate = Object.keys(creation).every(key => allowedFields.includes(key));
@@ -7,10 +7,14 @@ const createOne = (Model, allowedFields, uniqueField) => async (req, res) => {
             return res.status(400).send({ message: 'Invalid fields in request body' });
         }
 
-        const existingItem = await Model.findOne({ [uniqueField]: creation[uniqueField] });
+        const uniqueQuery = {};
+        uniqueFields.forEach(field => {
+            uniqueQuery[field] = creation[field];
+        });
 
+        const existingItem = await Model.findOne(uniqueQuery);
         if (existingItem) {
-            return res.status(400).send({ message: `${Model.modelName} name already exists` });
+            return res.status(400).send({ message: `${Model.modelName} with the same combination of ${uniqueFields.join(' and ')} already exists` });
         }
 
         const item = await Model.create(creation);

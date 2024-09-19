@@ -39,7 +39,7 @@ const createGame = async (req, res) => {
         const game = new Game({
             gameName: req.body.gameName,
             overview: req.body.overview,
-            posterPath: '/' + req.file.filename, // image uploadée
+            posterPath: '/' + req.file.filename,
             pegi: pegiId,
             developers: developerIds,
             types: typeIds,
@@ -62,12 +62,19 @@ const createGame = async (req, res) => {
 };
 
 const updateGame = async (req, res) => {
+    let uploadedImagePath;
     try {
         const updates = req.body;
-        const allowedFields = ['gameName', 'overview', 'pegi', 'developers', 'types', 'editors', 'triggers', 'gameModes'];
+        const allowedFields = ['gameName', 'overview', 'posterPath', 'pegi', 'developers', 'types', 'editors', 'triggers', 'gameModes'];
         const isValidUpdate = Object.keys(updates).every(key => allowedFields.includes(key));
 
+        // If the request does not contain valid fields, delete the uploaded image and return an error
         if (!isValidUpdate) {
+            if (req.file && req.file.filename) {
+                uploadedImagePath = path.join('./public/images', req.file.filename);
+                await fs.unlink(uploadedImagePath);
+                console.log('Uploaded image deleted due to invalid fields');
+            }
             return res.status(400).send({ message: 'Invalid update fields' });
         }
 
@@ -97,17 +104,49 @@ const updateGame = async (req, res) => {
             if (validTriggers.length !== updates.triggers.length) return res.status(400).json({ message: 'Invalid Trigger IDs' });
         }
 
-        // Check if the game exists and update it if it does
-        const game = await Game.findByIdAndUpdate(req.params.id, updates, {
+        // Search for the game to update
+        const game = await Game.findById(req.params.id);
+        if (!game) {
+            if (req.file && req.file.filename) {
+                uploadedImagePath = path.join('./public/images', req.file.filename);
+                await fs.unlink(uploadedImagePath);
+                console.log('New image deleted because game not found');
+            }
+            return res.status(404).send({ message: 'Game not found' });
+        }
+
+        // If a new image is uploaded, update the imgUrl field in the updates object
+        if (req.file && req.file.filename) {
+            updates.posterPath = '/' + req.file.filename;
+
+            // Delete the old image
+            const oldImagePath = path.join('./public/images', game.posterPath);
+            try {
+                await fs.unlink(oldImagePath);
+                console.log('Old image deleted successfully');
+            } catch (err) {
+                console.error('Failed to delete old image:', err);
+            }
+        }
+
+        // Update the game
+        const updatedGame = await Game.findByIdAndUpdate(req.params.id, updates, {
             new: true,
             runValidators: true,
             useFindAndModify: false
-        });
+        }).select("-__v");
 
-        if (!game) return res.status(404).send({ message: 'Game not found' });
+        // If the game is not updated, delete the new image if it exists
+        if (!updatedGame) {
+            if (req.file && req.file.filename) {
+                uploadedImagePath = path.join('./public/images', req.file.filename);
+                await fs.unlink(uploadedImagePath);
+                console.log('Uploaded image deleted because update failed');
+            }
+            return res.status(404).send({ message: 'Game not found' });
+        }
 
-        res.status(200).send(game);
-
+        res.status(200).send(updatedGame);
     } catch (error) {
         res.status(500).send({ message: `Server error: ${error.message}` });
     }
