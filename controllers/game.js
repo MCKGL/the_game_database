@@ -214,12 +214,85 @@ const deleteGame = async (req, res) => {
     }
 };
 
+const getAllGames = async (req, res) => {
+    try {
+        const games = await Game.find()
+            .populate('pegi', 'pegiLabel imgUrl')
+            .populate('developers', 'developerName')
+            .populate('types', 'typeLabel')
+            .populate('editors', 'editorName')
+            .populate('triggers', 'triggerLabel')
+            .populate('gameModes', 'gameMode')
+            .select("-__v");
+
+        const gameIds = games.map(game => game._id);
+        const releaseDates = await ReleaseDate.find({ game: { $in: gameIds } })
+            .populate('hardware', 'hardwareName')
+            .select("-__v");
+
+        games.forEach(game => {
+            game.releaseDates = releaseDates.filter(date => date.game.equals(game._id));
+        });
+
+        res.status(200).send(games);
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+};
+
+const getGameById = async (req, res) => {
+    try {
+        const game = await Game.findById(req.params.id)
+            .populate('pegi', 'pegiLabel imgUrl')
+            .populate('developers', 'developerName')
+            .populate('types', 'typeLabel')
+            .populate('editors', 'editorName')
+            .populate('triggers', 'triggerLabel')
+            .populate('gameModes', 'gameMode')
+            .select("-__v");
+
+        if (!game) {
+            return res.status(404).send({ message: 'Game not found' });
+        }
+
+        game.releaseDates = await ReleaseDate.find({game: game._id})
+            .populate('hardware', 'hardwareName')
+            .select("-__v");
+
+        res.status(200).send(game);
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+};
+
+const getGameByName = async (req, res) => {
+    try {
+        const game = await Game.findOne({ gameName: req.params.gameName })
+            .populate('pegi', 'pegiLabel imgUrl')
+            .populate('developers', 'developerName')
+            .populate('types', 'typeLabel')
+            .populate('editors', 'editorName')
+            .populate('triggers', 'triggerLabel')
+            .populate('gameModes', 'gameMode')
+            .select("-__v");
+
+        if (!game) {
+            return res.status(404).send({ message: 'Game not found' });
+        }
+
+        game.releaseDates = await ReleaseDate.find({game: game._id})
+            .populate('hardware', 'hardwareName');
+
+        res.status(200).send(game);
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+};
 
 exports.create = createGame;
 exports.update = updateGame;
-// TODO the get all function should return the game with the associated data
-exports.getAll = genericController.getAll(Game);
-exports.getById = genericController.getById(Game);
-exports.getByName = genericController.getByName(Game, 'gameName');
-// TODO search by multiple attributes
+exports.getAll = getAllGames;
+exports.getById = getGameById;
+exports.getByName = getGameByName;
+// TODO search by multiple attributes (date, editor, developer, etc.)
 exports.delete = deleteGame;

@@ -10,6 +10,7 @@ const gameSchema = mongoose.Schema({
     editors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Editor', required: true }],
     triggers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Trigger'}],
     gameModes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'GameMode', required: true }],
+    releaseDates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ReleaseDate' }]
 });
 
 module.exports = mongoose.model('Game', gameSchema);
