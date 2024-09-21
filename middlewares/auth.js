@@ -52,8 +52,9 @@ const isAdmin = async (req, res, next) => {
 
 const isAdminOrUser = async (req, res, next) => {
     try {
+        // userId is set in verifyToken middleware
         const currentUser = await models.User.findById(req.userId);
-        const requestedUserId = req.params.id;
+        const requestedUserId = req.params.id_user;
         if (!currentUser) {
             return res.status(404).send({
                 message: "User Not Found!"

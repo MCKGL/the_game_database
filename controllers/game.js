@@ -1,5 +1,4 @@
 const Game = require('../models').Game;
-const genericController = require("./genericController");
 const fs = require('fs').promises;
 const path = require('path');
 const ReleaseDate = require('../models').ReleaseDate;

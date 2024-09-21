@@ -101,7 +101,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUser = async (req, res) => {
     try {
-        const user = await models.User.findById(req.params.id).select("-__v -password");
+        const user = await models.User.findById(req.params.id_user).select("-__v -password");
         if (!user) {
             return res.status(404).send({
                 message: "User Not Found!",
@@ -117,7 +117,7 @@ exports.getUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const userId = req.params.id;
+        const userId = req.params.id_user;
         const updates = req.body;
         const allowedUpdates = ["pseudo", "email", "password", "isAdmin"];
         const isValidUpdate = Object.keys(updates).every(update => allowedUpdates.includes(update));

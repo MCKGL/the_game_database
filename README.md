@@ -23,7 +23,9 @@ JWT_PUBLIC_KEY=path_to_public_key
 The API uses JSON Web Tokens (JWT) for authentication.
 When a user logs in, they receive a JWT token and a CSRF token. The JWT token is signed with a private key and includes 
 the user ID and CSRF token. The CSRF token is a random string generated to prevent Cross-Site Request Forgery (CSRF) 
-attacks.
+attacks. The CSRF token is stored in the user's session and is sent with each request as a header. 
+The JWT token is sent in a cookie, with the `HttpOnly` and `Secure` flags set to `true`. This ensures that the token is
+not accessible to JavaScript and is only sent over HTTPS.
 
 To create the private and public keys, you can use the following commands:
 ```bash
@@ -33,7 +35,6 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem
 
 # TODO
 - get on game
-- CRUD list
 - add to list and remove from list
 - add some security cors, express-rate-limit,...
 - Add API documentation (swagger)

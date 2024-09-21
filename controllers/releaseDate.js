@@ -1,7 +1,5 @@
 const genericController = require('./genericController');
-const ReleaseDate = require("../models").ReleaseDate;
-const Game = require('../models').Game;
-const Hardware = require('../models').Hardware;
+const {ReleaseDate, Game, Hardware} = require("../models");
 
 const createReleaseDate = async (req, res) => {
     try {
@@ -13,18 +11,18 @@ const createReleaseDate = async (req, res) => {
             return res.status(400).send({message: 'Invalid fields in request body'});
         }
 
-        const gameId = req.body.game;
-        const hardwareId = req.body.hardware;
+        const game = req.body.game;
+        const hardware = req.body.hardware;
 
-        const isValidGame = await Game.exists({_id: gameId});
-        const isValidHardware = await Hardware.exists({_id: hardwareId});
+        const isValidGame = await Game.exists({_id: game});
+        const isValidHardware = await Hardware.exists({_id: hardware});
 
         if (!isValidGame || !isValidHardware) {
             return res.status(400).json({message: 'Invalid IDs provided for game or hardware'});
         }
 
         // Check if a ReleaseDate with the same game and hardware already exists
-        const existingReleaseDate = await ReleaseDate.findOne({ game: gameId, hardware: hardwareId });
+        const existingReleaseDate = await ReleaseDate.findOne({ game: game, hardware: hardware });
 
         if (existingReleaseDate) {
             return res.status(400).json({ message: 'ReleaseDate with the same game and hardware already exists' });

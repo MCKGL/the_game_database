@@ -10,6 +10,7 @@ const TriggerRoutes = require('./trigger');
 const TypeRoutes = require('./type');
 const PegiRoutes = require('./pegi');
 const ReleaseDateRoutes = require('./releaseDate');
+const List = require('./list');
 
 router.use((req, res, next) => {
     res.header(
@@ -20,6 +21,6 @@ router.use((req, res, next) => {
 });
 
 // All routes must be prefixed with /api
-router.use('/api', UserRoutes, GameRoutes, DeveloperRoutes, EditorRoutes, GameModeRoutes, HardwareRoutes, TriggerRoutes, TypeRoutes, PegiRoutes, ReleaseDateRoutes);
+router.use('/api', UserRoutes, GameRoutes, DeveloperRoutes, EditorRoutes, GameModeRoutes, HardwareRoutes, TriggerRoutes, TypeRoutes, PegiRoutes, ReleaseDateRoutes, List);
 
 module.exports = router;
