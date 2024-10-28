@@ -50,7 +50,7 @@ const isAdmin = async (req, res, next) => {
     }
 };
 
-const isAdminOrUser = async (req, res, next) => {
+const isAdminOrOwner = async (req, res, next) => {
     try {
         // userId is set in verifyToken middleware
         const currentUser = await models.User.findById(req.userId);
@@ -77,7 +77,7 @@ const isAdminOrUser = async (req, res, next) => {
 const auth = {
     verifyToken: verifyToken,
     isAdmin: isAdmin,
-    isAdminOrUser: isAdminOrUser
+    isAdminOrOwner: isAdminOrOwner
 }
 
 module.exports = auth;

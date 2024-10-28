@@ -293,5 +293,4 @@ exports.update = updateGame;
 exports.getAll = getAllGames;
 exports.getById = getGameById;
 exports.getByName = getGameByName;
-// TODO search by multiple attributes (date, editor, developer, etc.)
 exports.delete = deleteGame;

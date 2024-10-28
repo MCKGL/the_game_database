@@ -77,10 +77,51 @@ const getListsUser = async (req, res) => {
     }
 };
 
+const addGameToList = async (req, res) => {
+    try {
+        const list = await List.findById(req.params.id);
+        if (!list) {
+            return res.status(404).json({message: 'List not found'});
+        }
+
+        const game = await Game.findById(req.body.game);
+        if (!game) {
+            return res.status(404).json({message: 'Game not found'});
+        }
+
+        list.games.push(game);
+        const updatedList = await list.save();
+        res.status(200).json(updatedList);
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
+const removeGameFromList = async (req, res) => {
+    try {
+        const list = await List.findById(req.params.id);
+        if (!list) {
+            return res.status(404).json({message: 'List not found'});
+        }
+
+        const game = await Game.findById(req.body.game);
+        if (!game) {
+            return res.status(404).json({message: 'Game not found'});
+        }
+
+        list.games = list.games.filter(g => g.toString() !== game._id.toString());
+        const updatedList = await list.save();
+        res.status(200).json(updatedList);
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
 exports.create = createList;
 exports.getAll = genericController.getAll(List);
 exports.getById = genericController.getById(List);
 exports.getListsUser = getListsUser;
 exports.update = updateList;
-// TODO remove and add
+exports.add = addGameToList;
+exports.remove = removeGameFromList;
 exports.delete = genericController.deleteOne(List);

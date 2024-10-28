@@ -33,8 +33,14 @@ openssl genpkey -algorithm RSA -out private_key.pem -aes256
 openssl rsa -pubout -in private_key.pem -out public_key.pem
 ```
 
-# TODO
-- get on game
-- add to list and remove from list
-- add some security cors, express-rate-limit,...
-- Add API documentation (swagger)
+# Improvements
+
+Many improvements can be made to the API. Some of the possible I can think of are:
+- It will be nice to have the possibility to search for games by multiple attributes (date, editor, developer, etc.)
+- Improve the lists : add a description, a cover, a date, a type (public, private, etc.)
+- Improve the answer of the API : add a pagination, a limit, a sort, etc.
+- Some refactoring can be done to improve the code quality and maintainability
+- Improve the security of the API (params vs body, etc.)
+- Add more tests to cover more scenarios
+- Add Swagger documentation on all the endpoints (not only on the games and users endpoints)
+- Add more functionalities to the API (reviews, ratings, etc.)
